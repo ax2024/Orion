@@ -3,11 +3,18 @@
 
     <string name="app_name">Orion</string>
     <string name="action_settings">Settings</string>
-    <string name="label_id">ID: </string>
-    <string name="label_pin">Pin: </string>
+    <string name="label_mediabox_num">Mediabox Num: </string>
+    <string name="label_web_pin">Pin: </string>
     <string name="btn_login">Login</string>
-    <string name="btn_pin_hint">Forget pin?</string>
+    <string name="btn_web_pin_hint">Forget pin?</string>
     <string name="alert_dialog_message_register_failed">Register failed!</string>
     <string name="error_dialog_title">Error</string>
     <string name="alert_dialog_positive_button">OK</string>
+    <string name="toast_login_num_or_pin_empty">Mediabox num or pin empty!</string>
+    <string name="progress_dialog_loading_message">Login...</string>
+    
+    
+    <!-- message's sender set by the operator's VVG server for anonymous
+         messages. The application must know it to handle it properly -->
+    <string name="operator_anonymous_sender">unknown</string>
 </resources>

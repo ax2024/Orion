@@ -1,7 +1,6 @@
 package com.orion.xmlrpc;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.xmlrpc.android.XMLRPCClient;
