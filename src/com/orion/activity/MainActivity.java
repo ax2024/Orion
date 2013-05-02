@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -110,8 +111,15 @@ public class MainActivity extends Activity {
             Boolean result = msg.getData().getBoolean("result");
             
             Log.d(TAG, "Registration result: " + result);
+
+            if (MainActivity.this.mProgressDialog != null) {
+                MainActivity.this.mProgressDialog.dismiss();
+            }
             
             if (result) {
+                Intent intent = new Intent(MainActivity.this, TabNavigation.class);
+                MainActivity.this.startActivity(intent);
+                finish();
             } else {
                 MainActivity.this.showAlert(
                         MainActivity.this.getResources().getString(
