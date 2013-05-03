@@ -28,7 +28,7 @@ public class OrionProvider extends ContentProvider {
 	/**
 	 * ParentManagement authority for content URIs
 	 */
-	public static final String AUTHORITY = "com.starrynight.android.orion.provider";
+	public static final String AUTHORITY = "com.starrynight.android.orion";
 	public static final String DATABASE_NAME = "ORION";
 	public static final int DATABASE_VERSION = 2;
 	public static final String TAG = OrionApplication.getApplicationTag()
@@ -42,13 +42,8 @@ public class OrionProvider extends ContentProvider {
     /**
      * Message wrapper class for content provider
      */
-    public static class Messages implements BaseColumns {
-		/**
-		 * The storage folder path
-		 */
-		public static final String STORAGE_FOLDER = 
-			OrionProvider.getStoragePath() + "/messages";
-        public static final String TABLE_NAME = "Messages";
+    public static class Message implements BaseColumns {
+        public static final String TABLE_NAME = "Message";
     	public static final String PATH = "messages";
     	private static final int MATCHER      = 100;
         /**
@@ -57,146 +52,22 @@ public class OrionProvider extends ContentProvider {
         public static final Uri CONTENT_URI = Uri.parse("content://"
                 + AUTHORITY + "/" + PATH);
 
-		/**
-		 * The sender of the message
-		 * <P>
-		 * Type: STRING
-		 * </P>
-		 */
-		public static final String SENDER = "SENDER";
-
-		/**
-		 * The timestamp for when the message was deposited
-		 * <P>
-		 * Type: INTEGER (long)
-		 * </P>
-		 */
-		public static final String DEPOSIT_DATE = "DEPOSIT_DATE";
-
-		/**
-		 * The length of the message
-		 * <P>
-		 * Type: INTEGER (long)
-		 * </P>
-		 */
-		public static final String DURATION = "DURATION";
-
-		/**
-		 * The IMAP Message ID
-		 * <P>
-		 * Type: STRING
-		 * </P>
-		 */
-		public static final String MESSAGE_ID = "MESSAGE_ID";
-
-    	/**
-		 * The IMAP message UID
-		 * <p>
-		 * Type: INTEGER (long)
-		 * </P>
-		 */
-		public static final String MESSAGE_UID = "MESSAGE_UID"; 
-
-		/**
-		 * The state of the message (read/unread)
-		 * Possible states: 0 for read, 1 for unread
-		 * <P>
-		 * Type: INTEGER (int)
-		 * </P>
-		 */
-		public static final String STATUS = "STATUS";
-
-		/**
-		 * The type of the message (message/missed call/infotainment)
-		 * Possible values: Voice-message, X-empty-call-capture-message, X-voice-infotainment-message
-		 * <P>
-		 * Type: STRING
-		 * </P>
-		 */
-		public static final String TYPE = "TYPE";
-		
-		/**
-		 * The text of the message
-		 * <p>
-		 * Type: STRING
-		 * </p>
-		 */
-		public static final String VTCTEXT = "VTCTEXT";
-		
-        /**
-         * If v2t is requesting
-         * 0 for not, 1 for yes.
-         * <p>
-         * Type: INTEGER (long)
-         * </p>
-         */
-        public static final String VTCREQUESTING = "VTCREQUESTING";
-
-		/**
-		 * The subject of the message (unused)
-		 * <P>
-		 * Type: STRING
-		 * </P>
-		 */
-		public static final String SUBJECT = "SUBJECT";
-
-		/**
-		 * The path to the media file of the message. This is supposed to be an URI.
-		 * <P>
-		 * Type: STRING
-		 * </P>
-		 */
-		public static final String FILE = "FILE";
-
-		/**
-		 * The lifetime of the file while new (unread). 
-		 * This is an absolute lifetime, not relative to deposit time
-		 * <P>
-		 * Type: INTEGER (long)
-		 * </P>
-		 */
-		public static final String NEW_LIFETIME = "NEW_LIFETIME";
-
-		/**
-		 * The lifetime of the file once read 
-		 * This is an absolute lifetime, not relative to deposit time
-		 * <P>
-		 * Type: INTEGER (long)
-		 * </P>
-		 */
-		public static final String LIFETIME = "LIFETIME";
-
-		/**
-		 * The tag of the message (used to handle favorites/trash etc...)
-		 * Possible values: null, "trash", "favorites"
-		 * <P>
-		 * Type: STRING 
-		 * </P>
-		 */
-		public static final String TAG = "TAG";
-
-		/**
-		 * Is the message modified in the UI
-		 * Values: 0 for CLEAN, 1 for partial (not downloaded yet), 
-		 * 2 for deleted locally 
-		 * <P>
-		 * Type: INTEGER (int)
-		 * </P>
-		 */
-		public static final String SYNCHRONIZATION = "SYNC";
-
-		/**
-		 * The contact ID of the sender 
-		 * <P>
-		 * Type: INTEGER (long)
-		 * </P>
-		 */
-		public static final String CONTACT_ID = "CONTACT_ID";
+		public static final String MSG_ID = "MsgId";
+		public static final String NUM_ORIGIN = "NumOrigin";
+		public static final String DEST_NUM = "DestNum";
+		public static final String MSG_DURATION = "MsgDuration";
+		public static final String MSG_TAG = "MsgTag"; 
+		public static final String MSG_STATE = "MsgState";
+		public static final String MSG_DEPOSIT_DATE = "MsgDepositDate";
+		public static final String CALLBACK_NUM = "CallbackNum";
+		public static final String CALL_DURATION = "CallDuration";
+        public static final String LOCAL_FILE_NAME = "LocalFileName";
+        public static final String IS_SEND_OUT = "IsSendOut";
 
 		/**
 		 * The default sort order for this table
 		 */
-		public static final String DEFAULT_SORT_ORDER = DEPOSIT_DATE + " DESC";
+		public static final String DEFAULT_SORT_ORDER = MSG_DEPOSIT_DATE + " DESC";
     }
 	
 	/**
@@ -296,7 +167,7 @@ public class OrionProvider extends ContentProvider {
 		}
 
 		private static final String INTEGER = " INTEGER ";
-        private static final String REAL = " REAL ";
+//        private static final String REAL = " REAL ";
 		private static final String TEXT = " TEXT ";
 		private static final String COMMA = ",";
 
@@ -314,24 +185,19 @@ public class OrionProvider extends ContentProvider {
 		}
 
         private void createMessagesTable(final SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE " + Messages.TABLE_NAME + " ("
-                + Messages._ID + INTEGER + "PRIMARY KEY,"
-                + Messages.MESSAGE_ID + INTEGER + COMMA
-                + Messages.MESSAGE_UID + INTEGER + COMMA
-                + Messages.SENDER + TEXT + COMMA 
-                + Messages.TYPE + TEXT + COMMA                
-                + Messages.DEPOSIT_DATE + INTEGER + COMMA 
-                + Messages.DURATION + INTEGER + COMMA 
-                + Messages.FILE + TEXT + COMMA 
-                + Messages.VTCTEXT + TEXT + COMMA
-                + Messages.VTCREQUESTING + INTEGER + COMMA
-                + Messages.SUBJECT + TEXT + COMMA 
-                + Messages.CONTACT_ID + INTEGER + COMMA 
-                + Messages.NEW_LIFETIME + INTEGER + COMMA 
-                + Messages.LIFETIME + INTEGER + COMMA 
-                + Messages.STATUS + INTEGER + COMMA 
-                + Messages.TAG + TEXT + COMMA 
-                + Messages.SYNCHRONIZATION + INTEGER 
+            db.execSQL("CREATE TABLE " + Message.TABLE_NAME + " ("
+                + Message._ID + INTEGER + "PRIMARY KEY,"
+                + Message.MSG_ID + INTEGER + COMMA
+                + Message.NUM_ORIGIN + TEXT + COMMA
+                + Message.DEST_NUM + TEXT + COMMA 
+                + Message.MSG_DURATION + INTEGER + COMMA                
+                + Message.MSG_TAG + TEXT + COMMA 
+                + Message.MSG_STATE + TEXT + COMMA 
+                + Message.MSG_DEPOSIT_DATE + INTEGER + COMMA 
+                + Message.CALLBACK_NUM + TEXT + COMMA 
+                + Message.CALL_DURATION + TEXT + COMMA 
+                + Message.LOCAL_FILE_NAME + TEXT + COMMA 
+                + Message.IS_SEND_OUT + INTEGER
                 + ");");
         }
         
@@ -347,7 +213,7 @@ public class OrionProvider extends ContentProvider {
         }
 
         private void clearDB(final SQLiteDatabase db) {
-            db.execSQL("DROP TABLE IF EXISTS " + Messages.TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + Message.TABLE_NAME);
             db.execSQL("DROP TABLE IF EXISTS " + Greetings.TABLE_NAME);
         }
         
@@ -544,8 +410,8 @@ public class OrionProvider extends ContentProvider {
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
         final String tableName;
         switch (sUriMatcher.match(uri)) {
-        case Messages.MATCHER:
-            tableName = Messages.TABLE_NAME;
+        case Message.MATCHER:
+            tableName = Message.TABLE_NAME;
             break;
         case Greetings.MATCHER:
             tableName = Greetings.TABLE_NAME;
@@ -592,7 +458,7 @@ public class OrionProvider extends ContentProvider {
 	@Override
 	public Uri insert(final Uri uri, final ContentValues values) {
 		switch (sUriMatcher.match(uri)){ // NOPMD
-		case Messages.MATCHER:
+		case Message.MATCHER:
 			return insertInMessages(values);
         case Greetings.MATCHER:
             return insertInGreetings(values);
@@ -601,6 +467,7 @@ public class OrionProvider extends ContentProvider {
 		} 
 	}
 
+    
 	private Uri insertInMessages(final ContentValues initialValues){
 		ContentValues values;
 		if (null == initialValues  || null == mOpenHelper ) {
@@ -610,62 +477,37 @@ public class OrionProvider extends ContentProvider {
 		}
 
 		final Long now = Long.valueOf(System.currentTimeMillis());
-		// Make sure that the fields are set      
-		if (   values.containsKey(Messages.SENDER)
-		    // and not empty!..
-            && !TextUtils.isEmpty((String)values.get(Messages.SENDER))) {
-			if (values.containsKey(Messages.CONTACT_ID)) {
-				values.put(Messages.CONTACT_ID, -1);
-			} else {
-//				values.put(Messages.CONTACT_ID, findContactFromCallNumber(
-//						(String) values.get(Messages.SENDER)));
-			}
-		} else {
-			values.put(Messages.SENDER, getContext().getString(R.string.operator_anonymous_sender));
-			values.put(Messages.CONTACT_ID, -1);
+
+		if (!values.containsKey(Message.NUM_ORIGIN)
+            || TextUtils.isEmpty((String)values.get(Message.NUM_ORIGIN))) {
+			values.put(Message.NUM_ORIGIN, getContext().getString(R.string.operator_anonymous_sender));
 		}
-		if (!values.containsKey(Messages.TYPE)) {
-			values.put(Messages.TYPE, "Voice-message");
+		if (!values.containsKey(Message.CALL_DURATION)) {
+			values.put(Message.CALL_DURATION, 0);
 		}
-		if (!values.containsKey(Messages.DURATION)) {
-			values.put(Messages.DURATION, 0);
+		if (!values.containsKey(Message.MSG_DEPOSIT_DATE)) {
+			values.put(Message.MSG_DEPOSIT_DATE, now);
 		}
-		if (!values.containsKey(Messages.DEPOSIT_DATE)) {
-			values.put(Messages.DEPOSIT_DATE, now);
-		}
-//		if (!values.containsKey(Messages.STATUS)) {
-//			values.put(Messages.STATUS, Message.Status.UNREAD.value());
-//		}
-	        //set lifetime to very far in the future, to prevent the soon deleted icon
-        	// from appearing and ensure the message is properly shown in the inbox
-	        if (!values.containsKey(Messages.LIFETIME)) {
-        	    values.put(Messages.LIFETIME, Long.MAX_VALUE);
-	        }
-        	//set lifetime to very far in the future, to prevent the soon deleted icon
-	        // from appearing and ensure the message is properly shown in the inbox
-        	if (!values.containsKey(Messages.NEW_LIFETIME)) {
-	            values.put(Messages.NEW_LIFETIME, Long.MAX_VALUE);
-        	}
-        	if (!values.containsKey(Messages.VTCTEXT)) {
-        		values.put(Messages.VTCTEXT, (String)null);
-        	}
-        	if (!values.containsKey(Messages.VTCREQUESTING)) {
-                values.put(Messages.VTCREQUESTING, 0);
-            }
+    	if (!values.containsKey(Message.LOCAL_FILE_NAME)) {
+    		values.put(Message.LOCAL_FILE_NAME, (String)null);
+    	}
+    	if (!values.containsKey(Message.IS_SEND_OUT)) {
+            values.put(Message.IS_SEND_OUT, 0);
+        }
 		try {
 			final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-			final long rowId = db.insert(Messages.TABLE_NAME, "message", values);
+			final long rowId = db.insert(Message.TABLE_NAME, "message", values);
 			if (rowId > 0) {
-				final Uri insertUri = ContentUris.withAppendedId( Messages.CONTENT_URI, rowId);
+				final Uri insertUri = ContentUris.withAppendedId( Message.CONTENT_URI, rowId);
 				getContext().getContentResolver().notifyChange(insertUri, null);
 				return insertUri;
 			}
 		} catch (NullPointerException npe) {
 			//we catch npe that may happen if the sd card is not present
-			Log.e(TAG, "NullPointerException while trying to insert entry in " + Messages.TABLE_NAME +" database");
+			Log.e(TAG, "NullPointerException while trying to insert entry in " + Message.TABLE_NAME +" database");
         } catch (SQLiteException sqlioe) {
             //we catch disk io that may happen if SD card full or faulty
-            Log.e(TAG, "SQLiteException  while trying to insert entry in " + Messages.TABLE_NAME +" database");
+            Log.e(TAG, "SQLiteException  while trying to insert entry in " + Message.TABLE_NAME +" database");
             // arm flag indicating that the application cannot write the db
 //            OrionApplication.readOnlyMode(true);
         }
@@ -743,9 +585,9 @@ public class OrionProvider extends ContentProvider {
         final String tableName;
         String orderBy;       
         switch (sUriMatcher.match(uri)) {
-        case Messages.MATCHER:
-            tableName = Messages.TABLE_NAME;
-            orderBy = Messages.DEFAULT_SORT_ORDER;
+        case Message.MATCHER:
+            tableName = Message.TABLE_NAME;
+            orderBy = Message.DEFAULT_SORT_ORDER;
             break;
         case Greetings.MATCHER:
             tableName = Greetings.TABLE_NAME;
@@ -794,8 +636,8 @@ public class OrionProvider extends ContentProvider {
 			String[] selectionArgs) {
         final String tableName;
         switch (sUriMatcher.match(uri)) {
-        case Messages.MATCHER:
-            tableName = Messages.TABLE_NAME;
+        case Message.MATCHER:
+            tableName = Message.TABLE_NAME;
             break;
         case Greetings.MATCHER:
             tableName = Greetings.TABLE_NAME;
@@ -826,7 +668,7 @@ public class OrionProvider extends ContentProvider {
 	// initialize URI matcher
 	static {
 		sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		sUriMatcher.addURI(OrionProvider.AUTHORITY, Messages.PATH, Messages.MATCHER);
+		sUriMatcher.addURI(OrionProvider.AUTHORITY, Message.PATH, Message.MATCHER);
         sUriMatcher.addURI(OrionProvider.AUTHORITY, Greetings.PATH, Greetings.MATCHER);
 		sUriMatcher.addURI(OrionProvider.AUTHORITY, RESET_PATH, MATCHER_RESET);
 	}

@@ -2,7 +2,6 @@ package com.starrynight.android.orion;
 
 import java.io.File;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -10,7 +9,7 @@ import android.os.Environment;
 import android.util.Log;
 
 
-public class OrionApplication extends Application {
+public class OrionApplication extends android.app.Application {
     final static String TAG = "Orion";
     public static final boolean DEBUG = true;
     
@@ -48,7 +47,7 @@ public class OrionApplication extends Application {
         mContext = this;
         
         // Clean installed apk file automatically
-        final File apk = new File(Environment.getExternalStorageDirectory() + "/Download/management.apk");
+        final File apk = new File(Environment.getExternalStorageDirectory() + "/Download/orion.apk");
         if (apk.exists()) {
             // Found update apk in storage, delete it
             Log.i(TAG, "Cleaning existing update file " 

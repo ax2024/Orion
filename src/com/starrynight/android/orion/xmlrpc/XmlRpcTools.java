@@ -1,6 +1,8 @@
 package com.starrynight.android.orion.xmlrpc;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.xmlrpc.android.XMLRPCClient;

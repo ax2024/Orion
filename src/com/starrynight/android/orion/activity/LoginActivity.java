@@ -1,13 +1,17 @@
 package com.starrynight.android.orion.activity;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,11 +25,13 @@ import android.widget.Toast;
 
 import com.orion.android.R;
 import com.starrynight.android.orion.OrionApplication;
+import com.starrynight.android.orion.OrionConfiguration;
+import com.starrynight.android.orion.storage.OrionProvider;
 import com.starrynight.android.orion.xmlrpc.XmlRpcTools;
 
-public class MainActivity extends Activity {
+public class LoginActivity extends Activity {
     final static String TAG = OrionApplication.getApplicationTag() + "."
-            + MainActivity.class.getSimpleName();
+            + LoginActivity.class.getSimpleName();
     
     EditText mMediaboxNumText = null;
     EditText mWebPinText = null;
@@ -52,8 +58,8 @@ public class MainActivity extends Activity {
             
             @Override
             public void onClick(View v) {
-                final String mediaboxNum = MainActivity.this.mMediaboxNumText.getText().toString().trim();
-                final String webPin = MainActivity.this.mWebPinText.getText().toString().trim();
+                final String mediaboxNum = LoginActivity.this.mMediaboxNumText.getText().toString().trim();
+                final String webPin = LoginActivity.this.mWebPinText.getText().toString().trim();
                 
                 if (checkLoginParameter(mediaboxNum, webPin)) {
 
@@ -68,9 +74,15 @@ public class MainActivity extends Activity {
                                 mMediabox = XmlRpcTools.doMediaBox_GetBySessionId(mSession);
                                 mMediaboxID = (Integer) mMediabox.get("MediaBoxId");
                                 Log.d(TAG, "mediabox id: " + mMediaboxID);
-                                Object[] messageList = null;
-                                messageList = XmlRpcTools.doMessage_GetAllMessageList(mMediaboxID, "VOX");
-                                result = true;
+                                if (mMediaboxID > 0) {
+                                    OrionConfiguration config = OrionApplication.getConfiguration();
+                                    config.setMediaboxNum(mMediaboxID);
+                                    Object[] messageList = null;
+                                    messageList = XmlRpcTools.doMessage_GetAllMessageList(
+                                            OrionApplication.getConfiguration().getMediaboxNum(), "VOX");
+                                    updateMessagesInDB(messageList);
+                                    result = true;
+                                }
                             } catch (Exception e) {
                                 Log.e(TAG, "Regist Failed: " + e.getMessage());
                             }
@@ -78,15 +90,15 @@ public class MainActivity extends Activity {
                             Bundle data = new Bundle();
                             data.putBoolean("result", result);
                             msg.setData(data);
-                            MainActivity.this.mHandler.sendMessage(msg);
+                            LoginActivity.this.mHandler.sendMessage(msg);
                         }
                         
                     }).start();
                             
-                    MainActivity.this.mProgressDialog = ProgressDialog.show(
-                            MainActivity.this, 
+                    LoginActivity.this.mProgressDialog = ProgressDialog.show(
+                            LoginActivity.this, 
                             "", 
-                            MainActivity.this.getResources().getString(R.string.progress_dialog_loading_message), 
+                            LoginActivity.this.getResources().getString(R.string.progress_dialog_loading_message), 
                             true);
                 }
             }
@@ -112,17 +124,17 @@ public class MainActivity extends Activity {
             
             Log.d(TAG, "Registration result: " + result);
 
-            if (MainActivity.this.mProgressDialog != null) {
-                MainActivity.this.mProgressDialog.dismiss();
+            if (LoginActivity.this.mProgressDialog != null) {
+                LoginActivity.this.mProgressDialog.dismiss();
             }
             
             if (result) {
-                Intent intent = new Intent(MainActivity.this, TabNavigation.class);
-                MainActivity.this.startActivity(intent);
+                Intent intent = new Intent(LoginActivity.this, TabNavigation.class);
+                LoginActivity.this.startActivity(intent);
                 finish();
             } else {
-                MainActivity.this.showAlert(
-                        MainActivity.this.getResources().getString(
+                LoginActivity.this.showAlert(
+                        LoginActivity.this.getResources().getString(
                                 R.string.alert_dialog_message_register_failed));
             }
         }
@@ -161,6 +173,44 @@ public class MainActivity extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+    
+    public void updateMessagesInDB(Object[] messageList) {
+//        for(HashMap<String, Object> message: messageList) {
+        for(int i = 0;i < messageList.length; i ++){
+            HashMap<String, Object> message = (HashMap<String, Object>) messageList[i];
+            
+            Integer messageId = (Integer) message.get(OrionProvider.Message.MSG_ID);
+            Cursor messageCur = OrionApplication.getContext().getContentResolver().query(
+                    OrionProvider.Message.CONTENT_URI,
+                    new String[] { OrionProvider.Message.MSG_ID },
+                    OrionProvider.Message.MSG_ID + " = \"" + messageId + "\"",
+                    null, null);
+            final ContentValues values = new ContentValues();
+            if (null != messageCur
+                    && messageCur.moveToFirst() && messageCur.getCount() > 0) {
+                values.put(OrionProvider.Message.MSG_TAG, (String) message.get(OrionProvider.Message.MSG_TAG));
+                values.put(OrionProvider.Message.MSG_STATE, (String) message.get(OrionProvider.Message.MSG_STATE));
+                
+                OrionApplication.getContext().getContentResolver().update(
+                        OrionProvider.Message.CONTENT_URI, values, 
+                        OrionProvider.Message.MSG_ID + " = \"" + messageId + "\"", null);
+            }
+            else {
+                values.put(OrionProvider.Message.MSG_ID, messageId);
+                values.put(OrionProvider.Message.NUM_ORIGIN, (String) message.get(OrionProvider.Message.NUM_ORIGIN));
+                values.put(OrionProvider.Message.DEST_NUM, (String) message.get(OrionProvider.Message.DEST_NUM));
+                values.put(OrionProvider.Message.MSG_DURATION,(Integer)  message.get(OrionProvider.Message.MSG_DURATION));
+                values.put(OrionProvider.Message.MSG_TAG, (String) message.get(OrionProvider.Message.MSG_TAG));
+                values.put(OrionProvider.Message.MSG_STATE, (String) message.get(OrionProvider.Message.MSG_STATE));
+                Date depositDate = (Date) message.get(OrionProvider.Message.MSG_DEPOSIT_DATE);
+                values.put(OrionProvider.Message.MSG_DEPOSIT_DATE, depositDate.getTime());
+                values.put(OrionProvider.Message.CALLBACK_NUM, (String) message.get(OrionProvider.Message.CALLBACK_NUM));
+                
+                OrionApplication.getContext().getContentResolver().insert(
+                        OrionProvider.Message.CONTENT_URI, values);
+            }
+        }
     }
 
 }
