@@ -1,4 +1,4 @@
-package com.orion.activity;
+package com.starrynight.android.orion.activity;
 
 
 import android.os.Bundle;

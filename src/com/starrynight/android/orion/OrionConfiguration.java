@@ -1,4 +1,4 @@
-package com.orion;
+package com.starrynight.android.orion;
 
 import android.content.Context;
 import android.content.SharedPreferences;

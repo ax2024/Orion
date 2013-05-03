@@ -1,4 +1,4 @@
-package com.orion.storage;
+package com.starrynight.android.orion.storage;
 
 public class MediaBox {
 

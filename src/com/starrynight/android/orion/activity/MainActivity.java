@@ -1,4 +1,4 @@
-package com.orion.activity;
+package com.starrynight.android.orion.activity;
 
 import java.util.HashMap;
 
@@ -19,9 +19,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.orion.OrionApplication;
 import com.orion.android.R;
-import com.orion.xmlrpc.XmlRpcTools;
+import com.starrynight.android.orion.OrionApplication;
+import com.starrynight.android.orion.xmlrpc.XmlRpcTools;
 
 public class MainActivity extends Activity {
     final static String TAG = OrionApplication.getApplicationTag() + "."

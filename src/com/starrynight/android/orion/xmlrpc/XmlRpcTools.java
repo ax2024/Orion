@@ -1,4 +1,4 @@
-package com.orion.xmlrpc;
+package com.starrynight.android.orion.xmlrpc;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import org.xmlrpc.android.XMLRPCException;
 
 import android.util.Log;
 
-import com.orion.OrionApplication;
+import com.starrynight.android.orion.OrionApplication;
 
 public class XmlRpcTools {
     final static String TAG = OrionApplication.getApplicationTag() + "."

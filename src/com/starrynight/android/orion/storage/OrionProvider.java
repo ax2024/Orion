@@ -1,4 +1,4 @@
-package com.orion.storage;
+package com.starrynight.android.orion.storage;
 
 import java.io.File;
 
@@ -20,15 +20,15 @@ import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.orion.OrionApplication;
 import com.orion.android.R;
+import com.starrynight.android.orion.OrionApplication;
 
 public class OrionProvider extends ContentProvider {
 
 	/**
 	 * ParentManagement authority for content URIs
 	 */
-	public static final String AUTHORITY = "com.orion.provider";
+	public static final String AUTHORITY = "com.starrynight.android.orion.provider";
 	public static final String DATABASE_NAME = "ORION";
 	public static final int DATABASE_VERSION = 2;
 	public static final String TAG = OrionApplication.getApplicationTag()
