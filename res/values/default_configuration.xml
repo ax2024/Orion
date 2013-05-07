@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="xml_rpc_server_uri">
+        http://192.168.174.70/rpc/Server.php
+    </string>
+    
+</resources>

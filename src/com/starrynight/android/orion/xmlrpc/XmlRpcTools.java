@@ -1,15 +1,14 @@
 package com.starrynight.android.orion.xmlrpc;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Date;
 
 import org.xmlrpc.android.XMLRPCClient;
 import org.xmlrpc.android.XMLRPCException;
 
 import android.util.Log;
 
+import com.orion.android.R;
 import com.starrynight.android.orion.OrionApplication;
 
 public class XmlRpcTools {
@@ -17,18 +16,17 @@ public class XmlRpcTools {
             + XmlRpcTools.class.getSimpleName();
 
     public XmlRpcTools() {
-        // TODO Auto-generated constructor stub
     }
     
-    static public String doMediaBox_Login(String id, String pin) {
+    static public String doMediaBox_Login(String webLogin, String webPassword, String webAuthByAccessCode) {
         XMLRPCClient client;
         URI uri;
         String session = null;
         
-        uri = URI.create("http://192.168.174.70/rpc/Server.php");
+        uri = URI.create(OrionApplication.getContext().getString(R.string.xml_rpc_server_uri));
         client = new XMLRPCClient(uri);
         
-        Object[] params = new Object[] { id, pin, "N" };
+        Object[] params = new Object[] { webLogin, webPassword, webAuthByAccessCode };
         
         try {
             session = (String) client.callEx("MediaBox.Login", params);
@@ -40,19 +38,19 @@ public class XmlRpcTools {
         return session;
     }
     
-    static public HashMap<String, Object> doMediaBox_GetBySessionId(String sessionId) {
+    static public Object doMediaBox_GetBySessionId(String sessionId) {
 
         XMLRPCClient client;
         URI uri;
         
-        uri = URI.create("http://192.168.174.70/rpc/Server.php");
+        uri = URI.create(OrionApplication.getContext().getString(R.string.xml_rpc_server_uri));
         client = new XMLRPCClient(uri);
         
         Object[] params = new Object[] { sessionId };
         
-        HashMap<String, Object> mediabox = null;
+        Object mediabox = null;
         try {
-            mediabox = (HashMap<String, Object>) client.callEx("MediaBox.GetBySessionId", params);
+            mediabox = client.callEx("MediaBox.GetBySessionId", params);
         } catch (XMLRPCException e) {
             Log.e(TAG, "ERROR:" + e.getMessage());
         }
@@ -65,7 +63,7 @@ public class XmlRpcTools {
         XMLRPCClient client;
         URI uri;
         
-        uri = URI.create("http://192.168.174.70/rpc/Server.php");
+        uri = URI.create(OrionApplication.getContext().getString(R.string.xml_rpc_server_uri));
         client = new XMLRPCClient(uri);
         
         Object[] params = new Object[] { mediaboxId, msgType };
@@ -80,4 +78,116 @@ public class XmlRpcTools {
         return result;
     }
 
+    static public Object doMessage_GetMp3MessageFile(int msgId) {
+
+        XMLRPCClient client;
+        URI uri;
+        
+        uri = URI.create(OrionApplication.getContext().getString(R.string.xml_rpc_server_uri));
+        client = new XMLRPCClient(uri);
+        
+        Object[] params = new Object[] { msgId };
+        
+        Object result = null;
+        try {
+            result = client.callEx("Message.GetMp3MessageFile", params);
+        } catch (XMLRPCException e) {
+            Log.e(TAG, "ERROR:" + e.getMessage());
+        }
+        
+        return result;
+    }
+    
+    static public Object doMessage_SendMessage(
+            String mediaboxNum,
+            Object messageFile,
+            String format,
+            String numOrigin,
+            String callbackNum,
+            Date expeditionDate,
+            String sendNotif) {
+
+        XMLRPCClient client;
+        URI uri;
+        
+        uri = URI.create(OrionApplication.getContext().getString(R.string.xml_rpc_server_uri));
+        client = new XMLRPCClient(uri);
+        
+        Object[] params = new Object[] { mediaboxNum, messageFile, format,
+                numOrigin, callbackNum, expeditionDate, sendNotif };
+        
+        Object result = null;
+        try {
+            result = client.callEx("Message.SendMessage", params);
+        } catch (XMLRPCException e) {
+            Log.e(TAG, "ERROR:" + e.getMessage());
+        }
+        
+        return result;
+    }
+    
+    static public Object doMessage_Archive(
+            int msgId,
+            String sessionId,
+            String SendMwi) {
+
+        XMLRPCClient client;
+        URI uri;
+        
+        uri = URI.create(OrionApplication.getContext().getString(R.string.xml_rpc_server_uri));
+        client = new XMLRPCClient(uri);
+        
+        Object[] params = new Object[] { msgId, sessionId, SendMwi };
+        
+        Object result = null;
+        try {
+            result = client.callEx("Message.Archive", params);
+        } catch (XMLRPCException e) {
+            Log.e(TAG, "ERROR:" + e.getMessage());
+        }
+        
+        return result;
+    }
+    
+    static public Object doMessage_ArchiveWithoutAuthentification(
+            int msgId, String SendMwi) {
+
+        XMLRPCClient client;
+        URI uri;
+        
+        uri = URI.create(OrionApplication.getContext().getString(R.string.xml_rpc_server_uri));
+        client = new XMLRPCClient(uri);
+        
+        Object[] params = new Object[] { msgId, SendMwi };
+        
+        Object result = null;
+        try {
+            result = client.callEx("Message.ArchiveWithoutAuthentification", params);
+        } catch (XMLRPCException e) {
+            Log.e(TAG, "ERROR:" + e.getMessage());
+        }
+        
+        return result;
+    }
+    
+    static public Object doMessage_DeleteById(
+            int msgId) {
+
+        XMLRPCClient client;
+        URI uri;
+        
+        uri = URI.create(OrionApplication.getContext().getString(R.string.xml_rpc_server_uri));
+        client = new XMLRPCClient(uri);
+        
+        Object[] params = new Object[] { msgId };
+        
+        Object result = null;
+        try {
+            result = client.callEx("Message.DeleteById", params);
+        } catch (XMLRPCException e) {
+            Log.e(TAG, "ERROR:" + e.getMessage());
+        }
+        
+        return result;
+    }
 }

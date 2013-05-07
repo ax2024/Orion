@@ -1,6 +1,5 @@
 package com.starrynight.android.orion.activity;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -65,13 +64,14 @@ public class LoginActivity extends Activity {
 
                     new Thread(new Runnable() {
 
+                        @SuppressWarnings("unchecked")
                         @Override
                         public void run() {
                             boolean result = false;
                             try {
-                                mSession = XmlRpcTools.doMediaBox_Login(mediaboxNum, webPin);
+                                mSession = XmlRpcTools.doMediaBox_Login(mediaboxNum, webPin, "N");
                                 Log.d(TAG, "session: " + mSession);
-                                mMediabox = XmlRpcTools.doMediaBox_GetBySessionId(mSession);
+                                mMediabox = (HashMap<String, Object>) XmlRpcTools.doMediaBox_GetBySessionId(mSession);
                                 mMediaboxID = (Integer) mMediabox.get("MediaBoxId");
                                 Log.d(TAG, "mediabox id: " + mMediaboxID);
                                 if (mMediaboxID > 0) {
@@ -176,8 +176,8 @@ public class LoginActivity extends Activity {
     }
     
     public void updateMessagesInDB(Object[] messageList) {
-//        for(HashMap<String, Object> message: messageList) {
-        for(int i = 0;i < messageList.length; i ++){
+        for(int i = 0; i < messageList.length; i++){
+            @SuppressWarnings("unchecked")
             HashMap<String, Object> message = (HashMap<String, Object>) messageList[i];
             
             Integer messageId = (Integer) message.get(OrionProvider.Message.MSG_ID);
