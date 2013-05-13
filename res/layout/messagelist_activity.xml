@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+ StreamWIDE Visual Voicemail Client
+
+ @category   Streamwide
+ @copyright  Copyright (c) 2010 StreamWIDE SA
+ @author     VVMClient team <VVMClient@streamwide.com>
+ @version    $Id: messagelist_activity.xml 612 2010-11-16 17:19:11Z mvinel $
+
+ © Copyright 2010 StreamWIDE. StreamWIDE is the copyright holder 
+ of all code contained in this file. Do not redistribute or
+ re-use without permission.
+
+-->
+
+<!-- UI layout for the MessageList activity. Merely an android
+     ExpandableListView where time-consecutive messages are grouped together
+     and can be expanded or collapsed -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+         android:orientation="vertical"
+         android:layout_width="fill_parent" 
+         android:layout_height="fill_parent">
+    
+    <!-- Banner text which is hidden most of the time but shows up
+         when an application update is available -->
+    <TextView android:id="@+id/messagelist_appupdate_txt"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:textAppearance="@android:style/TextAppearance.Medium"
+        android:gravity="center"
+        android:visibility="gone"
+        android:padding="4dip"/>
+        
+    <!-- The expandable list where the messages are listed, and eventually
+         grouped together
+         NOTE from layoutopt: Use an android:layout_height of 0dip instead of 
+                              fill_parent for better performance-->
+    <ExpandableListView android:id="@android:id/list"
+               android:layout_width="fill_parent" 
+               android:layout_height="0dip"
+               android:layout_weight="1"
+               android:drawSelectorOnTop="true"
+               android:dividerHeight="1dip"
+               android:groupIndicator="@null"
+               android:smoothScrollbar="true"/>
+     <!-- Text only showing up when there are no messages to display in the
+          list. Merely informs the user that there are no messages -->
+     <TextView android:id="@android:id/empty"
+               android:layout_width="fill_parent" 
+               android:layout_height="fill_parent"
+               android:textAppearance="@android:style/TextAppearance.Theme.Dialog"
+               android:gravity="center"/>
+ </LinearLayout>
+
