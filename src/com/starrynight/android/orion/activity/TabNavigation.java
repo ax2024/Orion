@@ -28,7 +28,7 @@ public class TabNavigation extends SherlockFragmentActivity  {
         					.setTabListener(new CustomTabListener<AndroidFragment>(this, "android", AndroidFragment.class) )
         					.setIcon(R.drawable.android);
         
-        // Adding Android Tab to acton bar
+        // Adding Android Tab to action bar
         actionBar.addTab(tab1);
         
         // Creating Apple Tab
