@@ -22,9 +22,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.orion.android.R;
 import com.starrynight.android.orion.OrionApplication;
 import com.starrynight.android.orion.OrionConfiguration;
+import com.starrynight.android.orion.R;
 import com.starrynight.android.orion.storage.OrionProvider;
 import com.starrynight.android.orion.xmlrpc.XmlRpcTools;
 

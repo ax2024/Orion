@@ -8,8 +8,8 @@ import org.xmlrpc.android.XMLRPCException;
 
 import android.util.Log;
 
-import com.orion.android.R;
 import com.starrynight.android.orion.OrionApplication;
+import com.starrynight.android.orion.R;
 
 public class XmlRpcTools {
     final static String TAG = OrionApplication.getApplicationTag() + "."

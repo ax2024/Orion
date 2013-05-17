@@ -25,7 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.orion.android.R;
+import com.starrynight.android.orion.R;
 
 /**
  * A generic, customizable Android ListView implementation that has 'Pull to Refresh' functionality.
@@ -46,7 +46,7 @@ import com.orion.android.R;
  * @author Erik Wallentinsen <dev+ptr@erikw.eu>
  * @version 1.0.0
  */
-public class PullToRefreshListView extends ListView{
+public class PullToRefreshListView extends ListView {
 
     private static final float PULL_RESISTANCE                 = 1.7f;
     private static final int   BOUNCE_ANIMATION_DURATION       = 700;

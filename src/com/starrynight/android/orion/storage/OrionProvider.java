@@ -20,8 +20,8 @@ import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.orion.android.R;
 import com.starrynight.android.orion.OrionApplication;
+import com.starrynight.android.orion.R;
 
 public class OrionProvider extends ContentProvider {
 
